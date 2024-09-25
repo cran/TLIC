@@ -2,39 +2,35 @@
 % Please edit documentation in R/TLIC.R
 \name{TLIC}
 \alias{TLIC}
-\title{The TLIC function is to perform a specific analysis based on the input data.}
+\title{TLIC function based on LIC with T-distributed errors}
 \usage{
-TLIC(X, y, alpha, K)
+TLIC(X, Y, alpha = 0.05, K = 10, nk = NULL, dist_type = "student_t")
 }
 \arguments{
 \item{X}{is a design matrix}
 
-\item{y}{is a random response vector of observed values}
+\item{Y}{is a random response vector of observed values}
 
 \item{alpha}{is the significance level}
 
 \item{K}{is the number of subsets}
+
+\item{nk}{is the sample size of subsets}
+
+\item{dist_type}{Type of distribution for the error terms.}
 }
 \value{
-A list containing various results of the analysis
+MUopt, Bopt, MAEMUopt, MSEMUopt, opt, Yopt
 }
 \description{
-The TLIC function is to perform a specific analysis based on the input data.
+TLIC function based on LIC with T-distributed errors
 }
 \examples{
-# Example usage of the TLIC function
 set.seed(12)
-X <- matrix(data = sample(1:3, 1200 * 5, replace = TRUE), nrow = 1200, ncol = 5)
-b <- sample(1:3, 5, replace = TRUE)
-e <- rnorm(1200, 0, 1)
-Y <- X \%*\% b + e
-alpha <- 0.05
-K <- 10
-result <- TLIC(X, Y, alpha, K)
-MUopt <- result$MUopt
-Bopt <- result$Bopt
-MAEMUopt <- result$MAEMUopt
-MSEMUopt <- result$MSEMUopt
-opt <- result$opt
-Yopt <- result$Yopt
+n <- 1200
+nr <- 200
+p <- 5
+data <- terr(n, nr, p, dist_type = "student_t")
+TLIC(data$X, data$Y, alpha = 0.05, K = 10, nk = n / 10, dist_type = "student_t")
+
 }

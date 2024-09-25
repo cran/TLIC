@@ -2,47 +2,34 @@
 % Please edit documentation in R/terr.R
 \name{terr}
 \alias{terr}
-\title{The terr function is to generate data based on different distributions.}
+\title{Generate Data with T-distributed Errors}
 \usage{
-terr(n, p, K, nr, alpha, sigma1, sigma2, beta, dist)
+terr(n, nr, p, dist_type, ...)
 }
 \arguments{
-\item{n}{is the total number of observations}
+\item{n}{Number of observations.}
 
-\item{p}{is the number of variables}
+\item{nr}{Number of observations with different error distribution.}
 
-\item{K}{is the number of subsets}
+\item{p}{Number of predictors.}
 
-\item{nr}{is the number of outliers}
+\item{dist_type}{Type of distribution for the error terms.}
 
-\item{alpha}{is the significance level}
-
-\item{sigma1}{is a parameter related to the distribution}
-
-\item{sigma2}{is a parameter related to the distribution}
-
-\item{beta}{is a coefficient vector}
-
-\item{dist}{is the type of distribution}
+\item{...}{Additional parameters for specific distributions.}
 }
 \value{
-A list containing the design matrix X and the response vector y
+A list containing the design matrix X, the response vector Y, and the error vector e.
 }
 \description{
-The terr function is to generate data based on different distributions.
+Generate Data with T-distributed Errors
 }
 \examples{
-# Example usage of the terr function
-n <- 100
+set.seed(12)
+n <- 1200
+nr <- 200
 p <- 5
-K <- 3
-nr <- 10
-alpha <- 0.05
-sigma1 <- 2
-sigma2 <- 5
-beta <- c(1, 2, 3, 4, 5)
-dist <- "Student t Distribution"
-result <- terr(n, p, K, nr, alpha, sigma1, sigma2, beta, dist)
-X <- result$X
-y <- result$y
+data <- terr(n, nr, p, dist_type = "student_t")
+print(data$X)
+print(data$Y)
+print(data$e)
 }

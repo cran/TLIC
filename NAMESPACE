@@ -2,6 +2,10 @@
 
 export(TLIC)
 export(terr)
+importFrom(LaplacesDemon,rst)
+importFrom(LaplacesDemon,rstp)
+importFrom(fBasics,rght)
+importFrom(fBasics,rsght)
 importFrom(stats,qt)
-importFrom(stats,rnorm)
 importFrom(stats,rt)
+importFrom(stats,runif)

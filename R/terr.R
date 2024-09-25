@@ -1,63 +1,72 @@
-#' The terr function is to generate data based on different distributions.
+#' Generate Data with T-distributed Errors
 #'
-#' @param n is the total number of observations
-#' @param p is the number of variables
-#' @param K is the number of subsets
-#' @param nr is the number of outliers
-#' @param alpha is the significance level
-#' @param sigma1 is a parameter related to the distribution
-#' @param sigma2 is a parameter related to the distribution
-#' @param beta is a coefficient vector
-#' @param dist is the type of distribution
+#' @param n Number of observations.
+#' @param nr Number of observations with different error distribution.
+#' @param p Number of predictors.
+#' @param dist_type Type of distribution for the error terms.
+#' @param ... Additional parameters for specific distributions.
 #'
-#' @return A list containing the design matrix X and the response vector y
+#' @return A list containing the design matrix X, the response vector Y, and the error vector e.
 #' @export
 #'
-#' @importFrom stats qt rnorm rt
+#' @importFrom stats runif
+#' @importFrom stats rt
+#' @importFrom LaplacesDemon rst rstp
+#' @importFrom fBasics rght rsght
+#'
 #' @examples
-#' # Example usage of the terr function
-#' n <- 100
+#' set.seed(12)
+#' n <- 1200
+#' nr <- 200
 #' p <- 5
-#' K <- 3
-#' nr <- 10
-#' alpha <- 0.05
-#' sigma1 <- 2
-#' sigma2 <- 5
-#' beta <- c(1, 2, 3, 4, 5)
-#' dist <- "Student t Distribution"
-#' result <- terr(n, p, K, nr, alpha, sigma1, sigma2, beta, dist)
-#' X <- result$X
-#' y <- result$y
+#' data <- terr(n, nr, p, dist_type = "student_t")
+#' print(data$X)
+#' print(data$Y)
+#' print(data$e)
+terr <- function(n, nr, p, dist_type, ...) {
+  beta <- sort(runif(p, 1, 5))
+  X <- matrix(runif(n * p, 0, 1), ncol = p)
 
-terr <- function(n, p, K, nr, alpha, sigma1, sigma2, beta, dist) {
-  if (dist == "Student t Distribution") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
-  } else if (dist == "Student t Distribution: Univariate with loc and scal") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
-  } else if (dist == "Student t Distribution: Precision Parameterization") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
-  } else if (dist == "Skew-t Distribution") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
-  } else if (dist == "Generalized Hyperbolic Student-t distribution") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
-  } else if (dist == "Standardized generalized hyperbolic Student-t Distribution") {
-    data1 <- matrix(rnorm((n - nr) * p, 0, sigma1), nrow = n - nr, ncol = p)
-    data2 <- matrix(rt(nr * p, df = 10), nrow = nr, ncol = p)
+  if (dist_type == "student_t") {
+    x2 <- runif(n, 0, 1)
+    df <- exp(exp(0.5 - x2))
+    e1 <- rt(n - nr, df)
+    e2 <- rt(nr, df)
+  } else if (dist_type == "student_t_loc_scale") {
+    e1 <- rst(n - nr, 0, 1, 10, ...)
+    e2 <- rst(nr, 0, 5, 7, ...)
+  } else if (dist_type == "student_t_precision") {
+    e1 <- rstp(n - nr, 0, 1, 10, ...)
+    e2 <- rstp(nr, 0, 5, 7, ...)
+  } else if (dist_type == "skew_t") {
+    xi <- 5
+    omega <- 1
+    alpha <- -5
+    beta <- 8
+    e1 <- rst(n - nr, xi, omega, alpha)
+    alpha <- -2
+    beta <- 4
+    e2 <- rst(nr, xi, omega, alpha)
+  } else if (dist_type == "gen_hyperbolic_stud_t") {
+    beta <- 0.1
+    delta <- 1
+    mu <- 0
+    nu <- 10
+    e1 <- rght(n - nr, beta = beta, delta = delta, mu = mu, nu = nu, ...)
+    e2 <- rght(nr, beta = beta, delta = delta, mu = mu, nu = nu, ...)
+  } else if (dist_type == "std_gen_hyperbolic_stud_t") {
+    beta <- 0.1
+    delta <- 1
+    mu <- 0
+    nu <- 10
+    e1 <- rsght(n - nr, beta = beta, delta = delta, mu = mu, nu = nu, ...)
+    e2 <- rsght(nr, beta = beta, delta = delta, mu = mu, nu = nu, ...)
+  } else {
+    stop("Unknown distribution type: ", dist_type)
   }
 
-  X <- rbind(data1, data2)
+  e <- c(e1, e2)
+  Y <- X %*% beta + e
 
-  e1 <- rnorm(n - nr, 0, sigma1)
-  y1 <- X[1:(n - nr), ] %*% beta + e1
-  e2 <- rnorm(nr, 0, sigma2)
-  y2 <- X[(n - nr + 1):n, ] %*% beta + e2
-
-  y <- c(y1, y2)
-
-  return(list(X = X, y = y))
+  return(list(X = X, Y = Y, e = e))
 }
