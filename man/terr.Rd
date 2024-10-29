@@ -2,34 +2,29 @@
 % Please edit documentation in R/terr.R
 \name{terr}
 \alias{terr}
-\title{Generate Data with T-distributed Errors}
+\title{terr function is used to generate a dataset where the error term follows a T-distribution}
 \usage{
 terr(n, nr, p, dist_type, ...)
 }
 \arguments{
-\item{n}{Number of observations.}
+\item{n}{is the number of observations}
 
-\item{nr}{Number of observations with different error distribution.}
+\item{nr}{is the number of observations with a different error T distribution}
 
-\item{p}{Number of predictors.}
+\item{p}{is the dimension of the observation}
 
-\item{dist_type}{Type of distribution for the error terms.}
+\item{dist_type}{is the type where the error term obeys a T-distribution}
 
-\item{...}{Additional parameters for specific distributions.}
+\item{...}{is additional arguments for the T-distribution function}
 }
 \value{
-A list containing the design matrix X, the response vector Y, and the error vector e.
+X,Y,e
 }
 \description{
-Generate Data with T-distributed Errors
+This terr function generates a dataset with a specified number of observations and predictors, along with a response vector that has an error term following a T-distribution.
 }
 \examples{
 set.seed(12)
-n <- 1200
-nr <- 200
-p <- 5
-data <- terr(n, nr, p, dist_type = "student_t")
-print(data$X)
-print(data$Y)
-print(data$e)
+data <- terr(n = 1200, nr = 200, p = 5, dist_type = "student_t")
+str(data)
 }

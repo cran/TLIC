@@ -1,11 +1,12 @@
 #' TLIC function based on LIC with T-distributed errors
 #'
+#'The TLIC function builds on the LIC function by introducing the assumption that the error term follows a T-distribution, thereby enhancing the length and information optimisation criterion.
 #' @param X is a design matrix
 #' @param Y is a random response vector of observed values
 #' @param alpha is the significance level
 #' @param K is the number of subsets
 #' @param nk is the sample size of subsets
-#' @param dist_type Type of distribution for the error terms.
+#' @param dist_type is the type where the error term obeys a T-distribution
 #'
 #' @return MUopt, Bopt, MAEMUopt, MSEMUopt, opt, Yopt
 #' @export
@@ -33,14 +34,14 @@ TLIC <- function(X, Y, alpha = 0.05, K = 10, nk = NULL, dist_type = "student_t")
   n <- nrow(X)
   p <- ncol(X)
 
-  N <- L1 <- c(1:K)
+  N <- L1 <- rep(NA, K)
   Rm <- matrix(rep(0, nk * K), ncol = K)
   mr <- matrix(rep(0, K * nk), ncol = nk)
 
   for (i in 1:K) {
     mr[i, ] <- sample(1:n, nk, replace = FALSE)
     r <- matrix(c(1:nk, mr[i, ]), ncol = nk, byrow = TRUE)
-    Rm[, i] <- r[2, ]
+    Rm[, i] <- r[2,]
     R <- matrix(rep(0, nk * n), ncol = n)
     R[t(r)] <- 1
 

@@ -17,13 +17,13 @@ TLIC(X, Y, alpha = 0.05, K = 10, nk = NULL, dist_type = "student_t")
 
 \item{nk}{is the sample size of subsets}
 
-\item{dist_type}{Type of distribution for the error terms.}
+\item{dist_type}{is the type where the error term obeys a T-distribution}
 }
 \value{
 MUopt, Bopt, MAEMUopt, MSEMUopt, opt, Yopt
 }
 \description{
-TLIC function based on LIC with T-distributed errors
+The TLIC function builds on the LIC function by introducing the assumption that the error term follows a T-distribution, thereby enhancing the length and information optimisation criterion.
 }
 \examples{
 set.seed(12)
